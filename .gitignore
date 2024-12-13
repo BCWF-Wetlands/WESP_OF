@@ -47,3 +47,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+archive/*
+data/*
+.gitignore
+.Rhistory
+out/*
+tmp/*
+RandomCode.R
