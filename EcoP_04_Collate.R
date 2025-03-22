@@ -27,6 +27,10 @@ OF_Answers.1.Check<-OF_Answers.1 %>%
      dplyr::select(WTLND_ID, c(paste0('OF30_',(1:3))))
 
 #Pull out office questions from FWetlands
+
+FWetlands<-st_read(file.path(spatialInDir,"2023Field.gpkg")) %>%
+  mutate(WTLND_ID=Wtlnd_C)
+
 OF_manual<-FWetlands %>%
   st_drop_geometry() %>%
   dplyr::rename(OF6_1=Stream_Intersect) %>%
