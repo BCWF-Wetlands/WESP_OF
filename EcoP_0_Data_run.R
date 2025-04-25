@@ -27,7 +27,7 @@ EcoPNL<-list("SOUTHERN INTERIOR MOUNTAINS",c("BOREAL PLAINS","TAIGA PLAINS"),
 #Select an EcoProvince(s)
 #one of: 1-SIM, 2-TBP, 3-SB, 4-GD, 5-GD_Est, 6-SB_PEM, 7-SI
 
-EcoP<-4
+EcoP<-1
 WetlandArea<-WetlandAreaL[EcoP]
 WetlandAreaDir<-WetlandAreaDirL[EcoP]
 WetlandAreaShort<-WetlandAreaShortL[EcoP]
@@ -46,6 +46,15 @@ tempAOIDir<-paste0("tmp/",WetlandAreaDir)
 dir.create(tempAOIDir, showWarnings = FALSE)
 
 #Load layers
+#Field Layers - should be first checked and cleaned by WESP_data_prep.R
+#Fetch Field Data - check that field data is stored in DataDir
+#FieldData<-file.path(dataDirPrep,'2024FieldData')
+#out_name<-'2024Field'
+#field_gdb<-list.files(FieldData, pattern = ".gdb", full.names = TRUE)[2]
+#st_layers(field_gdb)
+#layer_nm<-readline(prompt='Enter layer_name: ')
+#source('Field_01_load.R')
+#
 source('EcoP_01_load.R')
 #Fetch Field Data and AOIw based on wetlands, 2k buffer and their resident ASS_WS
 source('EcoP_02_clean.R')
@@ -55,12 +64,9 @@ source('EcoP_02_clean.R')
 #source('EcoP_03_Within.R')
 
 #Distance to attributes
-
 #Attributes adjacent to wetland
-
 #Attributes within 100m
-
 #Attributes within 2km
-
 #Attributes within ASS_WS
+#CC attributes
 

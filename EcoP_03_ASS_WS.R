@@ -18,12 +18,13 @@
 DEM_ASS_WS_max<- terra::extract(DEM.tp,FWA_ASS_WS,fun=max,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
-  dplyr::rename(DEM_max=DEM_GD) %>%
+  dplyr::rename(DEM_max=4) %>%
   dplyr::select(ASS_WS_id,DEM_max)
-DEM_ASS_WS_min<- terra::extract(DEM.tp,FWA_ASS_WS,fun=min,na.rm=T,bind=TRUE) %>%
+
+  DEM_ASS_WS_min<- terra::extract(DEM.tp,FWA_ASS_WS,fun=min,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
-  dplyr::rename(DEM_min=DEM_GD) %>%
+  dplyr::rename(DEM_min=4) %>%
   dplyr::select(ASS_WS_id,DEM_min)
 DEM_ASS_WS<- merge(DEM_ASS_WS_max,DEM_ASS_WS_min, by='ASS_WS_id') %>%
   mutate(DEM_range=DEM_max-DEM_min)
@@ -32,7 +33,7 @@ DEM_ASS_WS<- merge(DEM_ASS_WS_max,DEM_ASS_WS_min, by='ASS_WS_id') %>%
 wetDEM<- terra::extract(DEM.tp,FieldWet.pts,fun=mean,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
-  dplyr::rename(wetDEM=DEM_GD) %>%
+  dplyr::rename(wetDEM=3) %>%
   dplyr::select(WTLND_ID,wetDEM) %>%
   left_join(wet_WS)
 
@@ -50,8 +51,8 @@ Aspect8<-terra::terrain(DEM.tp, v='aspect', unit='degrees',neighbors=8)
 #writeRaster(Aspect, filename=file.path(spatialOutDir,paste0('Aspect_',WetlandAreaShort,'.tif')), overwrite=TRUE)
 #writeRaster(Aspect8, filename=file.path(spatialOutDir,paste0('Aspect8_',WetlandAreaShort,'.tif')), overwrite=TRUE)
 
-WS_DEM_asp<-terra::extract(rast(file.path(spatialOutDir,paste0('Aspect8_',WetlandAreaShort,'.tif'))),
-                           FWA_ASS_WS,fun=mean,na.rm=T,bind=TRUE)
+#WS_DEM_asp<-terra::extract(rast(file.path(spatialOutDir,paste0('Aspect8_',WetlandAreaShort,'.tif'))),
+WS_DEM_asp<-terra::extract(Aspect8, FWA_ASS_WS,fun=mean,na.rm=T,bind=TRUE)
 OF07<-wet_WS %>%
   left_join(as.data.frame(WS_DEM_asp)) %>%
   mutate(OF7_1=if_else(aspect>315 | aspect <45,1,0)) %>%

@@ -32,26 +32,6 @@ OF18<-FWA_lakes %>%
 WriteXLS(OF18,file.path(dataOutDir,'OF18.xlsx'))
 
 #Lake and Wetland Density within 2km of AA - OF19
-WetIn<- Wetlands %>%
-  dplyr::select(WTLND_ID,wet_id) %>%
-  st_cast("POLYGON") %>%
-  vect()
-
-LakeIn<-FWA_lakes %>%
-  #dplyr::select(lake_id) %>%
-  mutate(LkArea=as.numeric(st_area(.)*0.0001)) %>%
-  dplyr::filter(LkArea>0) %>%
-  dplyr::select(LkArea) %>%
-  st_cast("POLYGON") %>%
-  vect()
-
-#LkWet<-terra::union(LakeIn,WetIn) %>%
-#  sf::st_as_sf()
-#mapview(LkWet)+ mapview(FWA_lakes)+ mapview(Wetlands)
-#write_sf(LkWet, file.path(spatialOutDir,"LkWet.gpkg"))
-LkWet<-st_read(file.path(spatialOutDir,"LkWet.gpkg")) %>%
-  dplyr::select(-c(WTLND_ID))
-
 OF19<-LkWet %>%
   st_intersection(FWetlands2km) %>%
   mutate(LkWetArea_Ha=as.numeric(st_area(.)*0.0001)) %>%

@@ -17,6 +17,11 @@ Sys.unsetenv("GITHUB_PAT")
 #Questions - OF25, OF26, OF27
 #Get field wetland's centre point to feed climr
 # https://bcgov.github.io/climr/articles/climr_with_rasters.html
+remotes::install_github("bcgov/climr")
+devtools::install_github("bcgov/climr")
+library(climr)
+library(data.table)
+
 
 #add id, lon, lat, elev columns
 xyzDT <- terra::extract(DEM.tp, Field.pt, xy = TRUE) |>

@@ -40,6 +40,7 @@ options(timeout=10000)
 #install.packages("remotes") # to install climr
 #Sys.unsetenv("GITHUB_PAT") # need to remove token for climr install to work
 #remotes::install_github("bcgov/climr", force=TRUE)
+#https://bcgov.github.io/climr/
 #library(climr)
 
 DataDir <- 'data'
@@ -52,12 +53,13 @@ dataOutDir <- file.path(OutDir,'data')
 dir.create(file.path(dataOutDir), showWarnings = FALSE)
 spatialOutDir <- file.path(DataDir,'spatial')
 dir.create(file.path(spatialOutDir), showWarnings = FALSE)
+dataDirPrep <- file.path('../WESP_data_prep/data')
 dataOutDirP <- file.path('../WESP_data_prep/out/data')
 spatialOutDirP <- file.path('../WESP_data_prep/out/spatial')
-dataOutDirP <- file.path('../WESP_data_prep/out/data')
 dir.create("tmp", showWarnings = FALSE)
 ProvData<- file.path('../../PROVData')
 
+source('01_Load_Fns.R')
 #FieldData<-file.path(DataDir,'2023FieldData')
 #OutDirWESP <-'../WESP_data_prep/out'
 #dataOutDirWESP <- file.path(OutDirWESP,'data')

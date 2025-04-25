@@ -11,13 +11,13 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 #Generate AOI based on field wetlands for office questions data clipping
-AOIwbuff <- Field2023Data %>%
+AOIwbuff <- Field2024 %>%
   st_union() %>%
   st_as_sf() %>%
   st_buffer(dist=2000)
 #Identify all the FWA assessment watersheds that are within or touch the EcoProvince boundary and dissolve
 AOIwWS<- FWA_ASS_WSin %>%
-  st_filter(Field2023Data, .predicates=st_intersects) %>%
+  st_filter(Field2024, .predicates=st_intersects) %>%
   mutate(AOI=1) %>%
   dplyr::group_by(AOI) %>%
   dplyr::summarize()
@@ -28,7 +28,7 @@ AOIw<-AOIwWS %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   dplyr::filter(area_Ha>1250)
 #Check output and write
-mapview(AOIwbuff)+mapview(AOIwWS)+mapview(AOIw)+mapview(Field2023Data)
+mapview(AOIwbuff)+mapview(AOIwWS)+mapview(AOIw)+mapview(Field2024)
 write_sf(AOIw, file.path(spatialOutDir,paste0(WetlandAreaShortL[EcoP],"_AOIw.gpkg")))
 AOIw<-st_read(file.path(spatialOutDir,paste0(WetlandAreaShortL[EcoP],"_AOIw.gpkg")))
 
@@ -37,37 +37,38 @@ FWA_ASS_WS<-AOIwWS %>%
   st_union() %>%
   st_cast('POLYGON') %>%
   st_as_sf() %>%
-  st_filter(Field2023Data, .predicates=st_intersects) %>%
+  st_filter(Field2024, .predicates=st_intersects) %>%
   st_intersection(FWA_ASS_WSin) %>%
   mutate(WS_area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   dplyr::filter(WS_area_Ha>1) %>%
   mutate(ASS_WS_id=1:nrow(.)) %>%
   dplyr::select(id,ASS_WS_id,WS_area_Ha)
 
-mapview(Field2023Data)+mapview(FWA_ASS_WS)+mapview(AOIw)
+mapview(Field2024)+mapview(FWA_ASS_WS)+mapview(AOIw)
 write_sf(FWA_ASS_WS, file.path(spatialOutDir,'FWA_ASS_WS.gpkg'))
 
 #Identify FWA assessment watersheds that a wetland is within - if it is in multiple watersheds then chose the largest overlap
-wet_WS<-Field2023Data %>%
+wet_WS<-FWetlands %>%
   st_intersection(FWA_ASS_WS) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   st_drop_geometry() %>%
   group_by(WTLND_ID) %>%
   filter(area_Ha==max(area_Ha)) %>%
-  dplyr::select(WTLND_ID,ASS_WS_id)
-
-FWetlands<-Field2023Data
+  dplyr::select(wet_id,WTLND_ID,ASS_WS_id)
 
 FWetlands100m<-FWetlands %>%
   st_buffer(dist=100) %>%
   mutate(wetland_area_Ha=area_Ha) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
+  #mutate(wet_id=as.numeric(rownames(.))) %>%
+  #dplyr::select(wet_id,WTLND_ID,wetland_area_Ha,area_Ha)
   dplyr::select(wet_id,WTLND_ID,wetland_area_Ha,area_Ha)
 write_sf(FWetlands100m, file.path(spatialOutDir,"FWetlands100m.gpkg"))
 
 FWetlands1km<-FWetlands %>%
   st_buffer(dist=1000) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
+  mutate(wet_id=as.numeric(rownames(.))) %>%
   dplyr::select(wet_id,WTLND_ID,area_Ha)
 write_sf(FWetlands1km, file.path(spatialOutDir,"FWetlands1km.gpkg"))
 
@@ -76,8 +77,6 @@ FWetlands5km<-FWetlands %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   dplyr::select(wet_id,WTLND_ID,area_Ha)
 write_sf(FWetlands5km, file.path(spatialOutDir,"FWetlands5km.gpkg"))
-
-FWetlands100m<-st_read(file.path(spatialOutDir,"FWetlands100m.gpkg"))
 
 #Generate 2km assessment area
 FWetlands2km<-FWetlands %>%
@@ -134,9 +133,66 @@ terra::freq(unVeg)
 writeRaster(unVeg, filename=file.path(spatialOutDir,'unVeg.tif'), overwrite=TRUE)
 
 FieldWet.pts<-wetland.pt %>%
-  dplyr::filter(WTLND_ID %in% Field2023Data$WTLND_ID) %>%
+  dplyr::filter(WTLND_ID %in% Field2024$WTLND_ID) %>%
   mutate(wet_id=as.numeric(rownames(.))) %>%
   dplyr::select(WTLND_ID,wet_id)
+
+#Ponded Water
+#Identify all ponded water
+#LakesR<-fasterize(FWA_lakes, ProvRast, field="water",background=0)
+#writeRaster(LakesR, file.path(spatialOutDir,'LakesR.tif'), overwrite=TRUE)
+
+#Identify all ponded water not touching wetlands - move to Office
+#put a small buffer around lakes to address slivers, etc
+Lakes_file<-file.path(spatialOutDir,'LakesDontTouchD.tif')
+  if (!file.exists(Lakes_file)) {
+lakesB <- FWA_lakes %>%
+  st_buffer(dist=5)
+#identify wetlands that do not touch lakes - Terra failed, used raster but slower
+lakesWet<-st_intersection(Wetlands, lakesB)
+lakesThatDontTouch<-FWA_lakes %>%
+  dplyr::filter(!lake_id %in% lakesWet$lake_id) %>%
+  st_buffer(dist=0) %>%
+  dplyr::select(water)
+
+LakesDontTouchR<-fasterize(lakesThatDontTouch, ProvRast, field="water")
+writeRaster(LakesDontTouchR, file.path(spatialOutDir,'LakesDontTouchR.tif'), overwrite=TRUE)
+LakesDontTouchD<-raster::gridDistance(LakesDontTouchR,origin=1)
+writeRaster(LakesDontTouchD, file.path(spatialOutDir,'LakesDontTouchD.tif'), overwrite=TRUE)
+
+lakesThatDontTouchGT8 <- lakesThatDontTouch %>%
+  mutate(areaHa=as.numeric(st_area(.)*0.0001)) %>%
+  filter(areaHa>8)
+
+LakesDontTouchGT8R<-fasterize(lakesThatDontTouchGT8, ProvRast, field="water")
+LakesDontTouchGT8D<-raster::gridDistance(LakesDontTouchGT8R,origin=1)
+#plot(LakesDontTouchD)
+writeRaster(LakesDontTouchGT8D, file.path(spatialOutDir,'LakesDontTouchGT8D.tif'), overwrite=TRUE)
+
+WetIn<- Wetlands %>%
+  dplyr::select(WTLND_ID,wet_id) %>%
+  st_cast("POLYGON") %>%
+  vect()
+
+LakeIn<-FWA_lakes %>%
+  #dplyr::select(lake_id) %>%
+  mutate(LkArea=as.numeric(st_area(.)*0.0001)) %>%
+  dplyr::filter(LkArea>0) %>%
+  dplyr::select(LkArea) %>%
+  st_cast("POLYGON") %>%
+  vect()
+
+LkWet<-terra::union(LakeIn,WetIn) %>%
+  sf::st_as_sf()
+#mapview(LkWet)+ mapview(FWA_lakes)+ mapview(Wetlands)
+write_sf(LkWet, file.path(spatialOutDir,"LkWet.gpkg"))
+
+} else {
+LakesDontTouchD<-rast(file.path(spatialOutDir,'LakesDontTouchD.tif'))
+LakesDontTouchGT8D<-rast(file.path(spatialOutDir,'LakesDontTouchGT8D.tif'))
+LkWet<-st_read(file.path(spatialOutDir,"LkWet.gpkg"))
+}
+
 
 message('Breaking')
 break

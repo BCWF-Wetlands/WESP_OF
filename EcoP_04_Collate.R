@@ -27,9 +27,7 @@ OF_Answers.1.Check<-OF_Answers.1 %>%
      dplyr::select(WTLND_ID, c(paste0('OF30_',(1:3))))
 
 #Pull out office questions from FWetlands
-
-FWetlands<-st_read(file.path(spatialInDir,"2023Field.gpkg")) %>%
-  mutate(WTLND_ID=Wtlnd_C)
+FWetlands<-st_read(file.path(spatialInDir,paste0(WetlandAreaDir,"_2024Field.gpkg")))
 
 OF_manual<-FWetlands %>%
   st_drop_geometry() %>%
@@ -43,7 +41,7 @@ OF_manual<-FWetlands %>%
   mutate(OF10_4=if_else(OF10_0 >=100 & OF10_0<1000,1,0)) %>%
   mutate(OF10_5=if_else(OF10_0 >=1000 & OF10_0<2000,1,0)) %>%
   mutate(OF10_6=if_else(OF10_0 >=2000 | OF10_0==0,1,0)) %>%
-  dplyr::rename(OF11_0=Percent_of_catchament) %>%
+  dplyr::rename(OF11_0=Percent_of_Catchment) %>%
   mutate(OF11_1=if_else(OF11_0 <0.01,1,0)) %>%
   mutate(OF11_2=if_else(OF11_0 >=0.01 & OF11_0<0.1,1,0)) %>%
   mutate(OF11_3=if_else(OF11_0 >=0.1 & OF11_0<1,1,0)) %>%

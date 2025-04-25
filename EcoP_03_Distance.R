@@ -58,6 +58,8 @@ writeVector(Lakes.v, file.path(spatialOutDir,'Lakes.v.gpkg'), overwrite=TRUE)
 
 #use touches=TRUE to capture all lakes even those that are not completely in a cell
 Lakes.r<-terra::rasterize(Lakes.v,AOIr,field='water',touches=TRUE,background=1)
+Lakes.r<-terra::rasterize(Lakes.v,rast(ProvRast),field='water',touches=TRUE,background=1) %>%
+  terra::crop(AOIbuff)
 writeRaster(Lakes.r, file.path(spatialOutDir,'Lakes.r.tif'), overwrite=TRUE)
 Lakes.r<-rast(file.path(spatialOutDir,'Lakes.r.tif'))
 #Modify raster values - change 0 to 1 and 1 to 2, then change 2 to 0
@@ -82,12 +84,12 @@ LakesUnVegCost<-terra::costDist(LakesUnVeg, target=0)
 writeRaster(LakesUnVegCost, file.path(spatialOutDir,'LakesUnVegCost.tif'), overwrite=TRUE)
 
 #First get minimum distance to lakes
-OF03.1<-terra::extract(LakesDistCost,Field2023Data,fun=min,na.rm=T,bind=TRUE) %>%
+OF03.1<-terra::extract(LakesDistCost,FWetlands,fun=min,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
   dplyr::select(WTLND_ID,DistToPonded=water)
 #Second get minimum distance to lakes across UnVeg cost surface
-OF03.2<-terra::extract(LakesUnVegCost,Field2023Data,fun=min,na.rm=T,bind=TRUE) %>%
+OF03.2<-terra::extract(LakesUnVegCost,FWetlands,fun=min,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
   dplyr::select(WTLND_ID,DistToPondedunVeg=water)
@@ -96,7 +98,7 @@ OF03.2<-terra::extract(LakesUnVegCost,Field2023Data,fun=min,na.rm=T,bind=TRUE) %
 # there is no cost between lake and wetland, therefore not seperated
 OF03<-OF03.1 %>%
   left_join(OF03.2) %>%
-  #mutate(OF3_0=if_else(DistToPonded ==0,1,0)) %>%
+  mutate(OF3_0=if_else(DistToPonded ==0,1,0)) %>% #was not included - check?
   mutate(OF3_1=if_else(DistToPonded >0 & DistToPonded< 101 & (DistToPondedunVeg==DistToPonded),1,0)) %>%
   mutate(OF3_2=if_else(DistToPonded >0 & DistToPonded< 101 & (DistToPondedunVeg>DistToPonded),1,0)) %>%
   mutate(OF3_3=if_else(DistToPonded >100 & DistToPonded< 1001 & (DistToPondedunVeg==DistToPonded),1,0)) %>%
@@ -110,7 +112,7 @@ OF03.a<-OF03 %>%
 
 WriteXLS(OF03.a,file.path(dataOutDir,'OF03.xlsx'))
 
-FieldWetPond <- Field2023Data %>%
+FieldWetPond <- FWetlands %>%
   left_join(OF03) %>%
   dplyr::select(wet_id,WTLND_ID,area_Ha,DistToPonded,DistToPondedunVeg,OF3_0,OF3_1,OF3_2,OF3_3,OF3_4,OF3_5,OF3_6,OF3_7)
 
@@ -128,7 +130,7 @@ LakesGT8DistCost<-terra::costDist(LakesGT8.r, target=0, overwrite=TRUE)
 writeRaster(LakesGT8DistCost, file.path(spatialOutDir,'LakesGT8DistCost.tif'), overwrite=TRUE)
 LakesGT8DistCost<-rast(file.path(spatialOutDir,'LakesGT8DistCost.tif'))
 
-OF04<-terra::extract(LakesGT8DistCost,Field2023Data,fun=min,na.rm=T,bind=TRUE) %>%
+OF04<-terra::extract(LakesGT8DistCost,FWetlands,fun=min,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
   dplyr::select(WTLND_ID,DistToPondedGT8=water) %>%

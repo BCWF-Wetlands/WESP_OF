@@ -13,12 +13,12 @@
 #Questions - OF16, OF17, OF23, OF28, OF29
 #Distance to Questions - OF01
 
-FWetlands<-Field2023Data
+#FWetlands<-Field2023Data
 
 #OF01 - Distance to Community
 #wetland distance to >5 dwellings per square km - in meters
 # residence_R - is a raster surface of human density from stats CDN - see WESP_data_prep for layer details
-OF01<-terra::extract(residence_R,Field2023Data,fun=min,na.rm=T,bind=TRUE) %>%
+OF01<-terra::extract(residence_R,FWetlands,fun=min,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
   mutate(OF1_1=if_else(residence<=100,1,0)) %>%
@@ -61,7 +61,7 @@ wet_GeoF<-WithinFn(OF17,'OF17_1')
 BGCprotectedin<-st_read(file.path(spatialOutDirP,'BGCprotectedP.gpkg')) %>%
   st_intersection(AOIw)
 #need to assign dominant BGC to wetland, then what use that % unit protected
-OF23<-Field2023Data %>%
+OF23<-FWetlands %>%
   st_intersection(BGCprotectedin) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   st_drop_geometry() %>%
@@ -82,9 +82,9 @@ WriteXLS(OF23,file.path(dataOutDir,paste0('OF23.xlsx')))
 #OF28 - Site Index within
 #Get mean SI -
 # set na.rm=F so that NaN SI is picked up in wetlands where it is not typed
-wet_SIE<-terra::extract(VRI_SIR,Field2023Data,fun=mean,na.rm=F,weights=TRUE) %>%
+wet_SIE<-terra::extract(VRI_SIR,FWetlands,fun=mean,na.rm=F,weights=TRUE) %>%
   dplyr::rename(wet_id=ID)
-OF28<-Field2023Data %>%
+OF28<-FWetlands %>%
   st_drop_geometry() %>%
   mutate(wet_id=as.numeric(wet_id)) %>%
   left_join(wet_SIE) %>%
@@ -100,7 +100,7 @@ OF28<-Field2023Data %>%
 WriteXLS(OF28,file.path(dataOutDir,'OF28.xlsx'))
 
 #Topographic Position - OF29
-Top_pos<-terra::extract(LandForm,Field2023Data,fun=max,na.rm=T,bind=TRUE) %>%
+Top_pos<-terra::extract(LandForm,FWetlands,fun=max,na.rm=T,bind=TRUE) %>%
   sf::st_as_sf() %>%
   st_drop_geometry() %>%
   dplyr::select(WTLND_ID,Top_pos=landformP)
