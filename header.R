@@ -59,7 +59,19 @@ spatialOutDirP <- file.path('../WESP_data_prep/out/spatial')
 dir.create("tmp", showWarnings = FALSE)
 ProvData<- file.path('../../PROVData')
 
-source('01_Load_Fns.R')
+#Function to generate an excel file of WTLND_ID and layer of interest
+WithinFn<-function(layer_in,lname){
+  df<-FWetlands %>%
+    st_filter(layer_in, .predicates=st_intersects) %>%
+    st_drop_geometry() %>%
+    mutate(!! (lname) :=1) %>%
+    dplyr::select(WTLND_ID,!! (lname))
+
+  WriteXLS(df,file.path(dataOutDir,paste0(lname,'.xlsx')))
+  return(df)
+}
+
+#source('01_Load_Fns.R')
 #FieldData<-file.path(DataDir,'2023FieldData')
 #OutDirWESP <-'../WESP_data_prep/out'
 #dataOutDirWESP <- file.path(OutDirWESP,'data')

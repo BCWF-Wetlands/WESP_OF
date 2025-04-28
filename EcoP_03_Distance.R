@@ -25,7 +25,7 @@ DistToRoad<-as.data.frame(st_distance(FieldWet.pts, roads02$geom[NearestRoad], b
 colnames(DistToRoad)<-c('DistToRoad')
 
 OF02<-DistToRoad %>%
-  mutate(wet_id=as.numeric(rownames(.))) %>%
+  mutate(wetL_id=as.numeric(rownames(.))) %>%
   left_join(FieldWet.pts) %>%
   st_drop_geometry() %>%
   mutate(DistToRoad=as.numeric(DistToRoad)) %>%

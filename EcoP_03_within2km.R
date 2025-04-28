@@ -79,9 +79,9 @@ rclmat<-matrix(m,ncol=3, byrow=TRUE)
 DisturbB<-classify(Disturb,rclmat,include.lowest=TRUE)
 terra::freq(DisturbB)
 Intact_2km.1<- terra::extract(DisturbB,vect(FWetlands2km),fun=table,na.rm=T,bind=TRUE)
-colnames(Intact_2km.1)<-c('wet_id','intact_ha','disturbed_ha')
+colnames(Intact_2km.1)<-c('wetL_id','intact_ha','disturbed_ha')
 Intact_2km<-Intact_2km.1 %>%
-  mutate(wet_id=as.integer(wet_id)) %>%
+  mutate(wetL_id=as.integer(wetL_id)) %>%
   left_join(FWetlands2km) %>%
   sf::st_drop_geometry()
 
@@ -97,7 +97,7 @@ WriteXLS(OF32,file.path(dataOutDir,'OF32.xlsx'))
 
 #Mature and Old within 2km - OF33
 table(Old_GrowthSSP$TAP_CLASSIFICATION_LABEL)
-colnames(WTLND_ID_List)<-c('WTLND_ID')
+#colnames(WTLND_ID_List)<-c('WTLND_ID')
 OF33<-Old_GrowthSSP %>%
   dplyr::select(TAP_CLASSIFICATION_LABEL) %>%
   mutate(OGMature=if_else(TAP_CLASSIFICATION_LABEL %in% c('Mature','Old'),1,0)) %>%
@@ -139,7 +139,7 @@ terra::freq(DisturbB)
 
 LandCover_2kmE<- terra::extract(LandCover,vect(FWetlands2km),fun=table,na.rm=T,bind=TRUE)
 LandCover_2km<-LandCover_2kmE %>%
-  mutate(wet_id=as.integer(ID)) %>%
+  mutate(wetL_id=as.integer(ID)) %>%
   dplyr::select(-c('ID','Fresh Water','Marine Water')) %>%
   mutate(LandCoverCount=(rowSums(.!=0))-1)
 

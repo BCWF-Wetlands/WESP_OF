@@ -63,11 +63,11 @@ LandCovL<-LandCoverTbl %>%
   dplyr::select(value)
 #Use extract to build table of wetlands and cover
 LandCover_100mE<- terra::extract(LandCover,vect(FWetlands100m),fun=table,na.rm=T,bind=TRUE) %>%
-  mutate(wet_id=as.integer(ID))
+  mutate(wetL_id=as.integer(ID))
 #multiply table by 0.002 to translate 20mx20m to hectares
 sqm_to_ha<-res(LandCover)[1]*res(LandCover)[2]*0.0001
 LandCover_100m <- sqm_to_ha*(LandCover_100mE[LandCovL$value])
-LandCover_100m$wet_id=as.numeric(rownames(LandCover_100m))
+LandCover_100m$wetL_id=as.numeric(rownames(LandCover_100m))
 wet_LandCover_100m <- FWetlands100m %>%
   left_join(LandCover_100m) %>%
   mutate(area_Ha100m=as.numeric(st_area(.)*0.0001)) %>%

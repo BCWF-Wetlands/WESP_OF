@@ -19,34 +19,29 @@ AOI<- st_read(file.path(spatialInDir,paste0(WetlandAreaShortL[EcoP],"_AOI.gpkg")
 AOIr<-rast(file.path(spatialInDir,'AOIr.tif'))
 AOIbuff<-st_read(file.path(spatialInDir,paste0(WetlandAreaShortL[EcoP],"_AOIbuff.gpkg")))
 
-#load wetlands processed by WESP_data_prep
 Wetlands<-st_read(file.path(spatialInDir,'Wetlands.gpkg'))
 Wetlands.dat<-Wetlands %>% st_drop_geometry()
-Field2024<-st_read(file.path(spatialInDir,paste0(WetlandAreaDir,"_2024Field.gpkg")))
-FWetlands.1<-Field2024
+
 #Check if Sampled wetlands are in Wetlands data base and that there are no duplicates
 # and assign wet_id from Wetlands to Field2024Data
-Wetlands_id_missing<-FWetlands.1 %>%
+Wetlands_id_missing<-FWetlandsIn %>%
   dplyr::filter(!WTLND_ID %in% Wetlands.dat$WTLND_ID)
 #If missing wetlands - process Field data using the WESP_data_prep scripts
-Duplicate_Wetland_Co<-data.frame(Duplicates=FWetlands.1[duplicated(FWetlands.1$WTLND_ID),]$WTLND_ID)
+Duplicate_Wetland_Co<-data.frame(Duplicates=FWetlandsIn[duplicated(FWetlandsIn$WTLND_ID),]$WTLND_ID)
 #If clean then add wet_id from Wetlands to the field data
+# and add a wetL_id - for linking
 Wetlands_id<-Wetlands %>%
      st_drop_geometry() %>%
      dplyr::select(WTLND_ID,wet_id) %>%
-     dplyr::filter(WTLND_ID %in% FWetlands.1$WTLND_ID)
-FWetlands<-FWetlands.1 %>%
-  left_join(Wetlands_id, by='WTLND_ID')
+     dplyr::filter(WTLND_ID %in% FWetlandsIn$WTLND_ID)
+FWetlands<-FWetlandsIn %>%
+  left_join(Wetlands_id, by='WTLND_ID') %>%
+  mutate(wetL_id=as.numeric(rownames(.)))
 
 #Re-read Wetlands - if it was modified
 Wetlands<-st_read(file.path(spatialInDir,'Wetlands.gpkg'))
 WetlandsB<-st_read(file.path(spatialInDir,'WetlandsB.gpkg'))
 wetland.pt<-st_read(file.path(spatialInDir,'wetland.pt.gpkg'))
-
-#Wet up point file
-Field.pt<-wetland.pt %>%
-  dplyr::filter(WTLND_ID %in% FWetlands$WTLND_ID) %>%
-  dplyr::select(WTLND_ID,wet_id)
 
 #Read in the clipped data from WESP_data_prep
 DEM.tp<-rast(file.path(spatialInDir,paste0('DEMtp_',WetlandAreaShort,'.tif')))
@@ -60,7 +55,7 @@ Landforms_LUT<-read_xlsx(file.path(dataOutDirP,'Landforms_LUT.xlsx'))
 #BedRock<-read_xlsx(file.path(dataOutDir,paste('BedRock.xlsx',sep='')))
 dwell_R<-rast(file.path(spatialInDir,'dwell_R.tif'))
 residence_R<-rast(file.path(spatialInDir,'residence_R.tif'))
-#VRI_SIR<-rast(file.path(spatialInDir,'VRI_SIR.tif'))
+VRI_SIR<-rast(file.path(spatialInDir,'VRI_SIR.tif'))
 
 CDC_occur<-st_read(file.path(spatialInDir,'CDC_occur.gpkg'))
 ConservationLands<-st_read(file.path(spatialInDir,'ConservationLands.gpkg')) %>%
@@ -68,7 +63,7 @@ ConservationLands<-st_read(file.path(spatialInDir,'ConservationLands.gpkg')) %>%
 FWA_ASS_WSin<-st_read(file.path(spatialInDir,"FWA_ASS_WS.gpkg"))
 SARA<-st_read(file.path(spatialInDir,'SARA.gpkg'))
 Old_GrowthSSP<-st_read(file.path(spatialInDir,'Old_GrowthSSP.gpkg'))
-#VRI<-st_read(file.path(spatialInDir,'VRI_raw.gpkg'))
+VRI<-st_read(file.path(spatialInDir,'VRI_raw.gpkg'))
 roads<-st_read(file.path(spatialInDir,'roads_sf.gpkg'))
 Fire2010<-st_read(file.path(spatialInDir,'Fire2010.gpkg'))
 F_OWN<-st_read(file.path(spatialInDir,'F_OWN.gpkg'))

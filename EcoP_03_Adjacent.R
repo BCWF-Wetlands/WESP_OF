@@ -20,8 +20,8 @@
 OF15<-FWetlands100m %>%
   st_filter(Fire2010, .predicates = st_intersects) %>%
   st_drop_geometry() %>%
-  mutate(OF15_1=1) %>%
-  dplyr::select(WTLND_ID,OF15_1)
+  mutate(OF15=1) %>%
+  dplyr::select(WTLND_ID,OF15)
 
 WriteXLS(OF15,file.path(dataOutDir,'OF15.xlsx'))
 
@@ -30,7 +30,7 @@ WriteXLS(OF15,file.path(dataOutDir,'OF15.xlsx'))
 #
 Fn_34 <- function(FWet){
 wet_commLandkmE<-terra::extract(LandCover,FWet,fun=table,na.rm=T,weights=TRUE) %>%
-  dplyr::rename(wet_id=ID)
+  dplyr::rename(wetL_id=ID)
 #Pull out the most common landcover type and its area and calculate its proportion
 #Make 0 and NA very large so not included in rowMins
 wet_commLandkmE[is.na(wet_commLandkmE)]<-1e6
@@ -44,7 +44,7 @@ Wet_UncommLand.2 <- Wet_UncommLand.1 %>%
   mutate(UncommLandA=rowMins(as.matrix((.[LTypes]) )))
 
 df<-FWet %>%
-  mutate(wet_id=as.numeric(wet_id)) %>%
+  #mutate(wet_id=as.numeric(wet_id)) %>%
   left_join(Wet_UncommLand.2) %>%
   #get area of AA in same units as rast polygons - 20x20
   mutate(area_400m2=(area_Ha*10000)/400) %>%
@@ -72,7 +72,7 @@ WriteXLS(OF34,file.path(dataOutDir,'OF34.xlsx'))
 #OF 35 - most common cover land type adjacent to wetland
 #Generate a table of land cover types within and adjacent to wetland
 wet_commLandE<-terra::extract(LandCover,FWetlands100m,fun=table,na.rm=T,weights=TRUE) %>%
-  dplyr::rename(wet_id=ID)
+  dplyr::rename(wetL_id=ID)
 #Pull out the most common landcover type and its area and calculate its proportion
 LTypes<-colnames(wet_commLandE)[2:length(wet_commLandE)]
 Wet_commLand.1 <- wet_commLandE %>%
@@ -80,7 +80,7 @@ Wet_commLand.1 <- wet_commLandE %>%
   mutate(commLandA=rowMaxs(as.matrix((.[LTypes]) )))
 
 OF35<-FWetlands100m %>%
-  mutate(wet_id=as.numeric(wet_id)) %>%
+  #mutate(wet_id=as.numeric(wet_id)) %>%
   left_join(Wet_commLand.1) %>%
   #get area of AA in same units as rast polygons - 20x20
   mutate(area_400m2=(area_Ha*10000)/400) %>%

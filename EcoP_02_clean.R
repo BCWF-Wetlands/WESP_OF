@@ -11,13 +11,13 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 #Generate AOI based on field wetlands for office questions data clipping
-AOIwbuff <- Field2024 %>%
+AOIwbuff <- FWetlands %>%
   st_union() %>%
   st_as_sf() %>%
   st_buffer(dist=2000)
 #Identify all the FWA assessment watersheds that are within or touch the EcoProvince boundary and dissolve
 AOIwWS<- FWA_ASS_WSin %>%
-  st_filter(Field2024, .predicates=st_intersects) %>%
+  st_filter(FWetlands, .predicates=st_intersects) %>%
   mutate(AOI=1) %>%
   dplyr::group_by(AOI) %>%
   dplyr::summarize()
@@ -28,7 +28,7 @@ AOIw<-AOIwWS %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   dplyr::filter(area_Ha>1250)
 #Check output and write
-mapview(AOIwbuff)+mapview(AOIwWS)+mapview(AOIw)+mapview(Field2024)
+mapview(AOIwbuff)+mapview(AOIwWS)+mapview(AOIw)+mapview(FWetlands)
 write_sf(AOIw, file.path(spatialOutDir,paste0(WetlandAreaShortL[EcoP],"_AOIw.gpkg")))
 AOIw<-st_read(file.path(spatialOutDir,paste0(WetlandAreaShortL[EcoP],"_AOIw.gpkg")))
 
@@ -37,14 +37,14 @@ FWA_ASS_WS<-AOIwWS %>%
   st_union() %>%
   st_cast('POLYGON') %>%
   st_as_sf() %>%
-  st_filter(Field2024, .predicates=st_intersects) %>%
+  st_filter(FWetlands, .predicates=st_intersects) %>%
   st_intersection(FWA_ASS_WSin) %>%
   mutate(WS_area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   dplyr::filter(WS_area_Ha>1) %>%
   mutate(ASS_WS_id=1:nrow(.)) %>%
   dplyr::select(id,ASS_WS_id,WS_area_Ha)
 
-mapview(Field2024)+mapview(FWA_ASS_WS)+mapview(AOIw)
+mapview(FWetlands)+mapview(FWA_ASS_WS)+mapview(AOIw)
 write_sf(FWA_ASS_WS, file.path(spatialOutDir,'FWA_ASS_WS.gpkg'))
 
 #Identify FWA assessment watersheds that a wetland is within - if it is in multiple watersheds then chose the largest overlap
@@ -62,27 +62,27 @@ FWetlands100m<-FWetlands %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   #mutate(wet_id=as.numeric(rownames(.))) %>%
   #dplyr::select(wet_id,WTLND_ID,wetland_area_Ha,area_Ha)
-  dplyr::select(wet_id,WTLND_ID,wetland_area_Ha,area_Ha)
+  dplyr::select(wetL_id,wet_id,WTLND_ID,wetland_area_Ha,area_Ha)
 write_sf(FWetlands100m, file.path(spatialOutDir,"FWetlands100m.gpkg"))
 
 FWetlands1km<-FWetlands %>%
   st_buffer(dist=1000) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
   mutate(wet_id=as.numeric(rownames(.))) %>%
-  dplyr::select(wet_id,WTLND_ID,area_Ha)
+  dplyr::select(wetL_id,wet_id,WTLND_ID,area_Ha)
 write_sf(FWetlands1km, file.path(spatialOutDir,"FWetlands1km.gpkg"))
 
 FWetlands5km<-FWetlands %>%
   st_buffer(dist=5000) %>%
   mutate(area_Ha=as.numeric(st_area(.)*0.0001)) %>%
-  dplyr::select(wet_id,WTLND_ID,area_Ha)
+  dplyr::select(wetL_id,wet_id,WTLND_ID,area_Ha)
 write_sf(FWetlands5km, file.path(spatialOutDir,"FWetlands5km.gpkg"))
 
 #Generate 2km assessment area
 FWetlands2km<-FWetlands %>%
   st_buffer(dist=2000) %>%
   mutate(Buffarea_Ha=as.numeric(st_area(.)*0.0001)) %>%
-  dplyr::select(wet_id,WTLND_ID,Buffarea_Ha)
+  dplyr::select(wetL_id,wet_id,WTLND_ID,Buffarea_Ha)
 write_sf(FWetlands2km, file.path(spatialOutDir,"FWetlands2km.gpkg"))
 
 #mapview(FWetlands)+mapview(FWetlands2km)+mapview(FWA_lakes)
@@ -133,9 +133,9 @@ terra::freq(unVeg)
 writeRaster(unVeg, filename=file.path(spatialOutDir,'unVeg.tif'), overwrite=TRUE)
 
 FieldWet.pts<-wetland.pt %>%
-  dplyr::filter(WTLND_ID %in% Field2024$WTLND_ID) %>%
-  mutate(wet_id=as.numeric(rownames(.))) %>%
-  dplyr::select(WTLND_ID,wet_id)
+  dplyr::filter(WTLND_ID %in% FWetlands$WTLND_ID) %>%
+  mutate(wetL_id=as.numeric(rownames(.))) %>%
+  dplyr::select(wetL_id,WTLND_ID,wet_id)
 
 #Ponded Water
 #Identify all ponded water

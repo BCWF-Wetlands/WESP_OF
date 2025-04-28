@@ -47,14 +47,10 @@ dir.create(tempAOIDir, showWarnings = FALSE)
 
 #Load layers
 #Field Layers - should be first checked and cleaned by WESP_data_prep.R
-#Fetch Field Data - check that field data is stored in DataDir
-#FieldData<-file.path(dataDirPrep,'2024FieldData')
-#out_name<-'2024Field'
-#field_gdb<-list.files(FieldData, pattern = ".gdb", full.names = TRUE)[2]
-#st_layers(field_gdb)
-#layer_nm<-readline(prompt='Enter layer_name: ')
-#source('Field_01_load.R')
-#
+Field_in<-st_read(file.path(spatialInDir,paste0("SIM_Base_2024Field.gpkg")))
+FWetlandsIn<-Field_in
+
+#load wetlands processed by WESP_data_prep
 source('EcoP_01_load.R')
 #Fetch Field Data and AOIw based on wetlands, 2k buffer and their resident ASS_WS
 source('EcoP_02_clean.R')

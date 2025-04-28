@@ -10,9 +10,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-
 #lapply to collate all the OF answers in the out/data folder
 #gather all the OF spreadsheets into a list and join them together
+# First delete Answer file if it exists
+Answer_File<-paste0(dataOutDir,"/OF_Answers.data.xlsx")
+if (file.exists(Answer_File)) {
+  file.remove(Answer_File)
+}
 OF_Files<-list.files(path=file.path(dataOutDir),
                      recursive=FALSE, pattern='OF')
 
@@ -48,18 +52,14 @@ OF_manual<-FWetlands %>%
   mutate(OF11_4=if_else(OF11_0 >=1,1,0)) %>%
   dplyr::mutate(OF13_1=if_else(ConservationInvestment=='0',0,1)) %>%
   dplyr::rename(OF14_1=Sustained_Sci_Use) %>%
-  #mutate(OF24_0=1) %>%
-  mutate(OF24_1=0) %>%
-  mutate(OF24_2=0) %>%
-  mutate(OF24_3=0) %>%
-  mutate(OF24_4=0) %>%
-  mutate(OF44_1=1) %>%
-  mutate(OF44_2=0) %>%
-  mutate(OF44_3=0) %>%
-  mutate(OF44_4=0) %>%
-  mutate(OF44_5=0) %>%
+  mutate(OF24_0=Species_of_Concern) %>%
+  mutate(OF44_1=ifelse(WetlandAreaShort=='GD',1,0)) %>%
+  mutate(OF44_2=ifelse(WetlandAreaShort=='CM',1,0)) %>%
+  mutate(OF44_3=ifelse(WetlandAreaShort=='SIM',1,0)) %>%
+  mutate(OF44_4=ifelse(WetlandAreaShort=='BP',1,0)) %>%
+  mutate(OF44_5=ifelse(WetlandAreaShort=='TP',1,0)) %>%
   dplyr::select(WTLND_ID, OF6_1,OF8_0,OF9_0,OF10_1,OF10_2,OF10_3,OF10_4,OF10_5,OF10_6,
-                OF11_1,OF11_2,OF11_3,OF11_4,OF13_1,OF14_1,OF24_1,OF24_2,OF24_3,OF24_4,
+                OF11_1,OF11_2,OF11_3,OF11_4,OF13_1,OF14_1,OF24_0,
                 OF44_1,OF44_2,OF44_3,OF44_4,OF44_5) %>%
   select(WTLND_ID,(contains('OF')))
 
@@ -67,9 +67,9 @@ OF_manual_Wetland_Co<-OF_manual %>%
   dplyr::select(WTLND_ID)
 
 # Make list of manual variables that require parsing
-ParseVars<-c('OF8_0','OF9_0')
+ParseVars<-c('OF8_0','OF9_0','OF24_0')
 #Number of sub-categories for each variable
-NparseVars<-c(3,4)
+NparseVars<-c(3,4,4)
 #drop geometry
 
 SplitFn1 <- function(i,df) {
@@ -98,7 +98,7 @@ df3<-lapply(1:length(ParseVars), function(x) {
 #Combine generated form sub-variables with original data.frame
 OF_manual.1<-cbind(OF_manual_Wetland_Co,do.call(cbind, df3))
 OF_manual.2 <- merge(OF_manual,OF_manual.1,by='WTLND_ID') %>%
-  dplyr::select(-c(OF8_0,OF9_0))
+  dplyr::select(-c(OF8_0,OF9_0,OF24_0))
 
 OF_Answers.data <- merge(OF_Answers.1,OF_manual.2,by='WTLND_ID') %>%
   mutate_all(funs(str_replace(.,'N/A','0'))) %>%

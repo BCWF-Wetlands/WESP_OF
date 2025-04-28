@@ -30,17 +30,6 @@ OF01<-terra::extract(residence_R,FWetlands,fun=min,na.rm=T,bind=TRUE) %>%
 
 WriteXLS(OF01,file.path(dataOutDir,'OF01.xlsx'))
 
-#Function to generate an excel file of WTLND_ID and layer of interest
-WithinFn<-function(layer_in,lname){
-  df<-FWetlands %>%
-    st_filter(layer_in, .predicates=st_intersects) %>%
-    st_drop_geometry() %>%
-    mutate(!! (lname) :=1) %>%
-    dplyr::select(WTLND_ID,!! (lname))
-
- WriteXLS(df,file.path(dataOutDir,paste0(lname,'.xlsx')))
-  return(df)
-}
 
 #Karst - significant, based on 'KARST_DEVELOPMENT_INTENSITY' - OF16
 Karstin<-st_read(file.path(spatialOutDirP,'KarstP.gpkg')) %>%
@@ -49,13 +38,13 @@ OF16<-Karstin %>%
   mutate(KarstConfidence=str_extract(substr(KARST_DEVELOPMENT_CONFIDENCE,1,2),'[[:digit:]]+')) %>%
   dplyr::select(KarstConfidence,KARST_LIKELIHOOD,KARST_DEVELOPMENT_INTENSITY) %>%
   dplyr::filter(KARST_DEVELOPMENT_INTENSITY %in% c('H','M')) #drop L
-wet_Karst<-WithinFn(OF16,'OF16_1')
+wet_Karst<-WithinFn(OF16,'OF16')
 
 
 #GeoFP - all polygons are faults - OF17
 OF17<-st_read(file.path(spatialOutDirP,'GeoFP.gpkg')) %>%
   st_intersection(AOIw)
-wet_GeoF<-WithinFn(OF17,'OF17_1')
+wet_GeoF<-WithinFn(OF17,'OF17')
 
 #BGC Protected - OF23
 BGCprotectedin<-st_read(file.path(spatialOutDirP,'BGCprotectedP.gpkg')) %>%
@@ -83,10 +72,11 @@ WriteXLS(OF23,file.path(dataOutDir,paste0('OF23.xlsx')))
 #Get mean SI -
 # set na.rm=F so that NaN SI is picked up in wetlands where it is not typed
 wet_SIE<-terra::extract(VRI_SIR,FWetlands,fun=mean,na.rm=F,weights=TRUE) %>%
-  dplyr::rename(wet_id=ID)
+  dplyr::rename(wetL_id=ID)
 OF28<-FWetlands %>%
+  mutate(wetL_id=as.numeric(rownames(.))) %>%
   st_drop_geometry() %>%
-  mutate(wet_id=as.numeric(wet_id)) %>%
+  mutate(wet_id=as.numeric(wetL_id)) %>%
   left_join(wet_SIE) %>%
   replace(is.na(.), 0) %>%
   mutate(OF28_1=if_else(VRI_SIR==0,0,0)) %>% #set 0 case to 0 for all cases

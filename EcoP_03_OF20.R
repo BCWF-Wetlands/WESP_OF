@@ -12,7 +12,6 @@
 
 #Questions - OF20 - species in wetland, watershed assessment unit and within 5km
 #Get strata layers
-FWetlands<-Field2023Data
 FWA_ASS_WS<-st_read(file.path(spatialOutDir,"FWA_ASS_WS.gpkg"))
 #clip out the 5km buffer where it is not in watershed
 FWetlands5kmW<-st_read(file.path(spatialOutDir,"FWetlands5km.gpkg")) %>%
