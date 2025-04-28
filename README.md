@@ -23,8 +23,8 @@ There are five sets of WESP R scripts to answer the office questions for wetland
 
 There are a set of scripts that help prepare and clea data and conduct the analysis for generating the answers to the WESP office questions, there are five basic sets of scripts:    
 1. Control scripts - set up the analysis environment;  
-2. Load scripts - loads base data and field data;    
-3. Clean scripts - cleans generic wetlands and ecoprovince/study area specific wetlands;    
+2. Load scripts - loads data;    
+3. Clean scripts - cleans and prepares wetland data;    
 4. Analysis scripts - The office questions are split into 7 types;   
 &nbsp;&nbsp;&nbsp;&nbsp;1. features adjacent to a wetland,  
 &nbsp;&nbsp;&nbsp;&nbsp;2. features within the wetland's Assessment watershed,  
@@ -33,29 +33,29 @@ There are a set of scripts that help prepare and clea data and conduct the analy
 &nbsp;&nbsp;&nbsp;&nbsp;5. Features within a wetland,  
 &nbsp;&nbsp;&nbsp;&nbsp;6. Features within 2km of a wetland, and  
 &nbsp;&nbsp;&nbsp;&nbsp;7. Features within 100m of a wetland; and   
-5. Output scripts - results from the analysis scripts is consolidated and joined with the manual data.
+5. Output scripts - results from the analysis scripts are consolidated and joined with the manual data.
   
 #Control Scripts:   
 EcoP_0_Data_run.R	Sets local variables and directories used by scripts, presents script order.  
 header.R	loads R packages, sets global directories, and attributes.
 
-#Load Scripts:	
+#Load Scripts:   
 EcoP_01_load.R	Loads core spatial layers used by routines.  
 
 #Clean Scripts:   
 EcoP_02_clean.R	Cleans data for analysis. 
 
 #Analysis Scripts:   
-EcoP_03_Adjacent.R - OF15, OF21, OF22, OF34 OF35  
+EcoP_03_Adjacent.R - OF15, OF21, OF22, OF34, OF35  
 EcoP_03_ASS_WS.R - OF05, OF07, OF12, OF41, OF42, OF43  
 EcoP_03_CC.R - OF25, OF26, OF27  
 EcoP_03_Distance.R - OF02, OF03, OF04  
 EcoP_03_OF20.R - OF20  
-EcoP_03_Within.R - OF16, OF17, OF23, OF28, OF29  
+EcoP_03_Within.R - OF01, OF16, OF17, OF23, OF28, OF29  
 EcoP_03_within2km.R - OF18, OF19, OF31, OF32, OF33, OF37  
 EcoP_03_within100m.R - OF30, OF36, OF38, OF39, OF40  
 
-#Output Scripts:
+#Output Scripts:   
 There EcoP_04_Collate.R	- collates the results from the analysis scripts along with the manual repsonses to questions OF6, OF8, OF9, OF10, OF11, OF13, OF14, OF24.  
 
 ### Project Status

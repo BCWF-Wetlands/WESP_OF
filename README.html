@@ -366,8 +366,8 @@ collaboration with conservation organizations and First Nations working
 to maintain and monitor wetlands across British Columbia.<br />
 <a href="https://bcwf.bc.ca/initiatives/wetlands-workforce/" class="uri">https://bcwf.bc.ca/initiatives/wetlands-workforce/</a>.</p>
 <p>WESP - Wetland Ecosystem Services Protocol</p>
-<p>There are five sets of WESP R scripts to identify wetlands for
-monitoring within a study area.<br />
+<p>There are five sets of WESP R scripts to answer the office questions
+for wetlands within a study area.<br />
 1) WESP_data_prep - This repository, presents a set of scripts used to
 generate a new, or process existing, wetlands for a study area;<br />
 2) WESP_Sample_Design - attributes wetlands with local human and natural
@@ -388,9 +388,8 @@ single comparison site;</p>
 conduct the analysis for generating the answers to the WESP office
 questions, there are five basic sets of scripts:<br />
 1. Control scripts - set up the analysis environment;<br />
-2. Load scripts - loads base data and field data;<br />
-3. Clean scripts - cleans generic wetlands and ecoprovince/study area
-specific wetlands;<br />
+2. Load scripts - loads data;<br />
+3. Clean scripts - cleans and prepares wetland data;<br />
 4. Analysis scripts - The office questions are split into 7 types;<br />
     1. features adjacent to a wetland,<br />
     2. features within the wetland’s Assessment watershed,<br />
@@ -399,7 +398,7 @@ specific wetlands;<br />
     5. Features within a wetland,<br />
     6. Features within 2km of a wetland, and<br />
     7. Features within 100m of a wetland; and<br />
-5. Output scripts - results from the analysis scripts is consolidated
+5. Output scripts - results from the analysis scripts are consolidated
 and joined with the manual data.</p>
 <p>#Control Scripts:<br />
 EcoP_0_Data_run.R Sets local variables and directories used by scripts,
@@ -418,9 +417,10 @@ EcoP_03_OF20.R - OF20<br />
 EcoP_03_Within.R - OF16, OF17, OF23, OF28, OF29<br />
 EcoP_03_within2km.R - OF18, OF19, OF31, OF32, OF33, OF37<br />
 EcoP_03_within100m.R - OF30, OF36, OF38, OF39, OF40</p>
-<p>#Output Scripts: There EcoP_04_Collate.R - collates the results from
-the analysis scripts along with the manual repsonses to questions OF6,
-OF8, OF9, OF10, OF11, OF13, OF14, OF24.</p>
+<p>#Output Scripts:<br />
+There EcoP_04_Collate.R - collates the results from the analysis scripts
+along with the manual repsonses to questions OF6, OF8, OF9, OF10, OF11,
+OF13, OF14, OF24.</p>
 </div>
 <div id="project-status" class="section level3">
 <h3>Project Status</h3>
