@@ -12,12 +12,12 @@ https://bcwf.bc.ca/initiatives/wetlands-workforce/.
 
 WESP - Wetland Ecosystem Services Protocol   
 
-There are five sets of WESP R scripts to answer the office questions for wetlands within a study area.  
-1) WESP_data_prep - This repository, presents a set of scripts used to generate a new, or process existing, wetlands for a study area;  
-2) WESP_Sample_Design - attributes wetlands with local human and natural landscape characteristics - https://github.com/BCWF-Wetlands/WESP_Sample_Design;   
-3) WESP_Sample_Draw - Generates a report card of how samples are meeting sampling criteria and performs a draw to select wetlands to meet criteria - https://github.com/BCWF-Wetlands/WESP_Sample_Draw;  
-4) WESP_OF - this repository, automates the majority of the office WESP questions. Questions OF6, OF8, OF9, OF10, OF11, OF13, OF14, OF24 must be answered manually; and  
-5) WESP_Calculator - reads the office and field questions and runs wespr which calculate the Ecosystem Services for set of reference sites or a single comparison site;  
+There are five sets of WESP R scripts to assess wetlands within a study area:  
+1) WESP_data_prep - This repository, presents a set of scripts used to generate a new, or process existing, wetlands for a study area and the associated spatial data - https://github.com/BCWF-Wetlands/WESP_data_prep;  
+2) WESP_Sample_Design - attributes wetlands with  human and natural landscape characteristics - https://github.com/BCWF-Wetlands/WESP_Sample_Design;   
+3) WESP_Sample_Draw - Generates a report card of how samples are meeting sampling criteria and performs a draw to select wetlands to fill sampling gaps - https://github.com/BCWF-Wetlands/WESP_Sample_Draw;  
+4) WESP_OF - this repository, automates the majority of the office WESP questions. Questions OF6, OF8, OF9, OF10, OF11, OF13, OF14, OF24 must be answered manually - https://github.com/BCWF-Wetlands/WESP_OF; and  
+5) WESP_Calculator - reads the office and field questions and runs wespr which calculate the Ecosystem Services for set of reference sites or a single comparison site - https://github.com/BCWF-Wetlands/WESP_Calculator.  
 
 ### Usage
 
