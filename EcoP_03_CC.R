@@ -36,7 +36,7 @@ wetpt <- wetlandsXYDEM %>%
 write_csv(wetpt, path=file.path(dataOutDir, 'SIMwetpt.csv'))
 #After write copy the data into an email and send to windows and ensure
 # no blank lines, and use Windows CR
-
+# externally need to take file out and input to climatebc (external process)
 
 OF_25_26_27<-read_csv(file.path(dataOutDir,'CC/SIMwetpt_Normal_1961_1990Y.csv')) %>%
   dplyr::rename(wet_id=ID1) %>%
