@@ -59,7 +59,7 @@ source('EcoP_01_load.R')
 source('EcoP_02_clean.R')
 
 #Office questions were organized into their problem type
-# Similar methods are used for many questions, these could be simplified by developing a handful of specialized functions
+#Similar methods are used for many questions, these could be simplified by developing a handful of specialized functions
 #Distance to attributes
 source('EcoP_Distance.R')
 #Attributes adjacent to wetland
