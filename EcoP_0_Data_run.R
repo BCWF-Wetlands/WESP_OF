@@ -58,7 +58,7 @@ source('EcoP_01_load.R')
 #Fetch Field Data and AOIw based on wetlands, 2k buffer and their resident ASS_WS
 source('EcoP_02_clean.R')
 
-#Office questions were organized into their problem type
+#Office questions were organized into their problem type - results for each question are exported as individual tables
 #Similar methods are used for many questions, these could be simplified by developing a handful of specialized functions
 #Distance to attributes
 source('EcoP_Distance.R')
@@ -74,5 +74,10 @@ source('EcoP_within2km.R')
 source('EcoP_ASS_WS.R')
 #CC attributes - NOTE requires manual step to access data from climateBC
 source('EcoP_CC.R')
+
+#Collate the individual office questions into a consolidated spreadsheet,
+# includes extracting manual questions from the field data - NOTE to be replace with survey123 office manual in wespr
+source('EcoP_04_Collate.R')
+
 
 
