@@ -45,7 +45,7 @@ OF_manual<-FWetlands %>%
   mutate(OF10_4=if_else(OF10_0 >=100 & OF10_0<1000,1,0)) %>%
   mutate(OF10_5=if_else(OF10_0 >=1000 & OF10_0<2000,1,0)) %>%
   mutate(OF10_6=if_else(OF10_0 >=2000 | OF10_0==0,1,0)) %>%
-  dplyr::rename(OF11_0=Percent_of_Catchment) %>%
+  dplyr::rename(OF11_0=Percent_of_catchament) %>%
   mutate(OF11_1=if_else(OF11_0 <0.01,1,0)) %>%
   mutate(OF11_2=if_else(OF11_0 >=0.01 & OF11_0<0.1,1,0)) %>%
   mutate(OF11_3=if_else(OF11_0 >=0.1 & OF11_0<1,1,0)) %>%
@@ -106,7 +106,7 @@ OF_Answers.data <- merge(OF_Answers.1,OF_manual.2,by='WTLND_ID') %>%
   select(WTLND_ID, order(colnames(.)))
 
 OF_Answers.data.Check<-OF_Answers.data %>%
-  dplyr::select(WTLND_ID, c(paste0('OF10_',(1:6))))
+  dplyr::select(WTLND_ID, c(paste0('OF24_',(1:4))))
 
 OF_Answers.spatial<- FWetlands  %>%
   dplyr::select(WTLND_ID) %>%
