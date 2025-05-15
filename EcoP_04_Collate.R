@@ -72,7 +72,7 @@ OF_manual_Wetland_Co<-OF_manual %>%
 # Make list of manual variables that require parsing
 ParseVars<-c('OF8_0','OF9_0','OF24_0')
 #Number of sub-categories for each variable
-NparseVars<-c(3,4,4)
+NparseVars<-c(3,4,5)
 #Function to parse
 SplitFn1 <- function(i,df) {
   df2<-lapply(1:NparseVars[i], function(j) {
