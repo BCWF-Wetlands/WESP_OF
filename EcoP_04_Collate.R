@@ -13,7 +13,7 @@
 #lapply to collate all the OF answers in the out/data folder
 #gather all the OF spreadsheets into a list and join them together
 # First delete Answer file if it exists
-Answer_File<-paste0(dataOutDir,"/OF_Answers.data.xlsx")
+Answer_File<-paste0(dataOutDir,"/",WetlandAreaShort,"_OF_Answers.data.xlsx")
 if (file.exists(Answer_File)) {
   file.remove(Answer_File)
 }
@@ -47,14 +47,14 @@ OF_manual<-FWetlands %>%
   mutate(OF10_5=if_else(OF10_0 >=1000 & OF10_0<2000,1,0)) %>%
   mutate(OF10_6=if_else(OF10_0 >=2000 | OF10_0==0,1,0)) %>%
   #Set up cases for OF_11
-  dplyr::rename(OF11_0=Percent_of_catchament) %>%
+  dplyr::rename(OF11_0=Percent_of_Catchment) %>% #Can be 'Percent_of_catchament' in some files...
   mutate(OF11_1=if_else(OF11_0 <0.01,1,0)) %>%
   mutate(OF11_2=if_else(OF11_0 >=0.01 & OF11_0<0.1,1,0)) %>%
   mutate(OF11_3=if_else(OF11_0 >=0.1 & OF11_0<1,1,0)) %>%
   mutate(OF11_4=if_else(OF11_0 >=1,1,0)) %>%
   dplyr::mutate(OF13_1=if_else(ConservationInvestment=='0',0,1)) %>%
   dplyr::rename(OF14_1=Sustained_Sci_Use) %>%
-  mutate(OF24_0=Species_of_Concern) %>% # parse out 4 cases below
+  mutate(OF24_0=Species_of_Concern) %>% # parse out 5 cases below
   mutate(OF44_1=ifelse(WetlandAreaShort=='GD',1,0)) %>%
   mutate(OF44_2=ifelse(WetlandAreaShort=='CM',1,0)) %>%
   mutate(OF44_3=ifelse(WetlandAreaShort=='SIM',1,0)) %>%
@@ -114,8 +114,8 @@ OF_Answers.spatial<- FWetlands  %>%
   dplyr::select(WTLND_ID) %>%
   left_join(OF_Answers.data, by = "WTLND_ID")
 
-st_write(OF_Answers.spatial,file.path(spatialOutDir,'OF_Answers.gpkg'),delete_dsn=TRUE)
+st_write(OF_Answers.spatial,file.path(spatialOutDir,paste0(WetlandAreaShort,'_OF_Answers.gpkg')),delete_dsn=TRUE)
 
-WriteXLS(OF_Answers.data,file.path(dataOutDir,'OF_Answers.data.xlsx'))
+WriteXLS(OF_Answers.data,file.path(dataOutDir,paste0(WetlandAreaShort,'_OF_Answers.data.xlsx')))
 
 ##################
